@@ -16,21 +16,35 @@ export class AuthService {
         options: { port: 3001 },
     });
 
-    refreshAccessToken(req: Request, res: Response) {
+    async refreshAccessToken(req: Request, res:Response) {
       const refreshToken = req.cookies['refreshToken'];
-      if (!refreshToken) throw new Error('Refresh token missing');
-  
+      if (!refreshToken) {
+        return { message: 'Refresh token missing' };
+      }
+
       try {
         const payload = this.jwtService.verify(refreshToken);
-  
-        const accessToken = this.jwtService.sign(
-          { sub: payload.sub, email: payload.email, role: payload.role },
-          { expiresIn: '15m' },
+        const userId = payload._id || payload.id;
+
+        const user = await firstValueFrom(
+          this.client.send('get-user-by-id', {_id: userId })
         );
-  
-        return { accessToken };
+
+        if (!user) {
+          return "User not found";
+        }
+
+        const cleanUser = {
+          id: user._id,
+          email: user.email,
+          role: user.role,
+        };
+
+        const accessToken = this.jwtService.sign(cleanUser, { expiresIn: '15m' });
+
+        res.json({ accessToken});
       } catch (err) {
-        throw new Error('Invalid refresh token');
+        res.status(401).json({ message: 'Refresh token fallado' });
       }
     }
 
@@ -39,12 +53,12 @@ export class AuthService {
           const user = await firstValueFrom(this.client.send('login', payload));
     
           const accessToken = this.jwtService.sign(
-            { sub: user._id, email: user.email, role: user.role },
+            { id: user.id, email: user.email, role: user.role },
             { expiresIn: '15m' }
           );
         
           const refreshToken = this.jwtService.sign(
-            { sub: user._id },
+            { id: user.id },
             { expiresIn: '7d' }
           );
 
@@ -56,11 +70,11 @@ export class AuthService {
           });
         
           // Retornar solo accessToken al frontend
-          res.json({ accessToken });
+          res.json({ accessToken});
         } catch (error) {
           res.status(401).json({ message: 'Credenciales inválidas' });
         }
-        }
+    }
       
 
   register(payload: RegisterRequestDto): Promise<RegisterRequestDto> {

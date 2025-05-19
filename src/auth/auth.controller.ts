@@ -28,8 +28,12 @@ export class AuthController {
 
     @Post('logout')
     logout(@Res({ passthrough: true }) res: Response) {
-      res.clearCookie('refreshToken');
-      return { message: 'Sesión cerrada correctamente' };
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: false, // true si usas HTTPS
+            sameSite: 'lax',
+        });
+        return res.status(200).json({ message: 'Sesión cerrada' });
     }
 
     @UseGuards(JwtAuthGuard)
@@ -44,7 +48,6 @@ export class AuthController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin')
     @Get('user')
     getUser(@Query('email') email: string) {
         return this.authService.getUserByEmail(email);
