@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ChangePasswordRequestDto, LoginRequestDto, RegisterRequestDto } from './dto/auth.dto';
 import { UserRequestDto } from './dto/user.dto';
@@ -17,7 +17,13 @@ export class AuthController {
         @Body() payload: LoginRequestDto,
         @Res({ passthrough: true }) res: Response
     ): Promise<void> {
-        return this.authService.login(payload,res);
+        try {
+            return this.authService.login(payload,res);
+        } catch (error) {
+            throw new Error(
+                typeof error === 'string' ? error : error.message || 'Error desconocido'
+            );
+        }
     }
 
     @Post('refresh')
@@ -38,8 +44,14 @@ export class AuthController {
 
     @UseGuards(JwtAuthGuard)
     @Post('register')
-    register(@Body() payload: RegisterRequestDto): Promise<RegisterRequestDto> {
-        return this.authService.register(payload);
+    async register(@Body() payload: RegisterRequestDto): Promise<RegisterRequestDto> {
+        try {
+            return await this.authService.register(payload);
+        } catch (error) {
+            throw new ConflictException(
+                typeof error === 'string' ? error : error.message || 'Error desconocido'
+            );
+        }
     }
 
     @Post('change-password')
