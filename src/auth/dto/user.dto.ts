@@ -1,34 +1,83 @@
-import { IsInt, IsString } from "class-validator";
-import { LoginRequestDto } from "./auth.dto";
+import {
+  IsInt,
+  IsString,
+  IsOptional,
+  IsDateString,
+  IsArray,
+  ValidateNested,
+  IsBoolean,
+} from 'class-validator';
+import { Type, Transform, Expose } from 'class-transformer';
+import { LoginRequestDto } from './auth.dto';
+
+class RequiredDocumentDto {
+  @Expose()
+  @IsString()
+  name: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  url?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsDateString()
+  @Transform(({ value }) => value ? value.toISOString().split('T')[0] : undefined)
+  expirationDate?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  notApplicable?: boolean;
+}
 
 export class UserRequestDto extends LoginRequestDto {
-    @IsString()
-    public name: string;
-    
-    @IsInt()
-    public age: number;
+  @Expose()
+  @IsString()
+  public name: string;
 
-    @IsString()
-    public rut: string;
+  @Expose()
+  @IsInt()
+  public age: number;
 
-    @IsString()
-    public address: string;
+  @Expose()
+  @IsString()
+  public rut: string;
 
-    @IsString()
-    public phone: string;
+  @Expose()
+  @IsString()
+  public address: string;
 
-    @IsString()
-    public birthdate: string;
+  @Expose()
+  @IsString()
+  public phone: string;
 
-    @IsString()
-    public area: string;
+  @Expose()
+  @IsString()
+  @Transform(({ value }) => value?.toISOString().split('T')[0])
+  public birthdate: string;
 
-    @IsString()
-    public position: string;
+  @Expose()
+  @IsString()
+  public area: string;
 
-    @IsString()
-    public role: string;
+  @Expose()
+  @IsString()
+  public position: string;
 
-    @IsString()
-    public date_incorporation: string;
+  @Expose()
+  @IsString()
+  public role: string;
+
+  @Expose()
+  @IsString()
+  @Transform(({ value }) => value?.toISOString().split('T')[0])
+  public date_incorporation: string;
+
+  @Expose()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => RequiredDocumentDto)
+  public requiredDocuments: RequiredDocumentDto[];
 }

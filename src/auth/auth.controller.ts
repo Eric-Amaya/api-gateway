@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ChangePasswordRequestDto, LoginRequestDto, RegisterRequestDto } from './dto/auth.dto';
 import { UserRequestDto } from './dto/user.dto';
@@ -7,6 +7,7 @@ import { Roles } from './decorators/role.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Request, Response } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -79,4 +80,15 @@ export class AuthController {
     deleteUser(@Param('_id') _id: string): Promise<string> {
         return this.authService.deleteUser(_id);
     }
+
+    @Patch('user/:_id/documents')
+    //seGuards(JwtAuthGuard)
+    updateUserDocument(
+    @Param('_id') _id: string,
+    @Body() document: UpdateDocumentDto,
+    ) {
+    return this.authService.updateUserDocument(_id, document);
+    }
+
+
 }
