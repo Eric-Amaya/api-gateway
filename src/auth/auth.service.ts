@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { LoginRequestDto, RegisterRequestDto } from './dto/auth.dto';
 import { UserRequestDto } from './dto/user.dto';
@@ -9,12 +9,11 @@ import { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
-    constructor(private jwtService: JwtService) {}
-
-    private client = ClientProxyFactory.create({
-        transport: Transport.TCP,
-        options: { port: 3001 },
-    });
+    constructor(
+      private jwtService: JwtService,
+      @Inject('AUTHENTICATION_SERVICE') private readonly client: ClientProxy, 
+      @Inject('ACTIVITIES_SERVICE') private readonly activitiesClient: ClientProxy,
+    ) {}
 
     async refreshAccessToken(req: Request, res:Response) {
       const refreshToken = req.cookies['refreshToken'];

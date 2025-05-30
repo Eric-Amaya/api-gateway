@@ -6,6 +6,9 @@ import { AuthController } from './auth.controller';
 import { RolesGuard } from './guards/roles.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -18,8 +21,21 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       }),
       inject: [ConfigService],
     }),
+    ClientsModule.register([
+    {
+      name: 'AUTHENTICATION_SERVICE',
+      transport: Transport.TCP,
+      options: { host: '127.0.0.1', port: 3001 },
+    },
+    {
+      name: 'ACTIVITIES_SERVICE',
+      transport: Transport.TCP,
+      options: { host: '127.0.0.1', port: 3001 },
+    },
+  ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RolesGuard],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, JwtRefreshGuard, RolesGuard],
+  exports: [JwtModule, JwtStrategy, JwtAuthGuard, JwtRefreshGuard, AuthService, RolesGuard], 
 })
 export class AuthModule {}

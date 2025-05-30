@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ChangePasswordRequestDto, LoginRequestDto, RegisterRequestDto } from './dto/auth.dto';
 import { UserRequestDto } from './dto/user.dto';
@@ -7,10 +7,17 @@ import { Roles } from './decorators/role.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Request, Response } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { Role } from './enum/role.enum';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(
+        private readonly authService: AuthService,
+        @Inject('ACTIVITIES_SERVICE')
+        private readonly activitiesClient: ClientProxy,
+    ) {}
 
     @Post('login')
     login(
@@ -42,11 +49,22 @@ export class AuthController {
         return res.status(200).json({ message: 'Sesión cerrada' });
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Post('register')
-    async register(@Body() payload: RegisterRequestDto): Promise<RegisterRequestDto> {
+    async register(
+        @Body() payload: RegisterRequestDto,
+        @Req() req: any,
+    ) {
+
         try {
-            return await this.authService.register(payload);
+            await this.authService.register(payload);
+
+            await firstValueFrom(this.activitiesClient.send('create-activity', {
+                user: req.user.id,
+                action: 'Registro de un nuevo usuario',
+            }));
+
         } catch (error) {
             throw new ConflictException(
                 typeof error === 'string' ? error : error.message || 'Error desconocido'
@@ -65,7 +83,8 @@ export class AuthController {
         return this.authService.getUserByEmail(email);
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Get('user/:_id')
     getUserById(@Param('_id') _id: string): Promise<UserRequestDto | null> {
         return this.authService.getUserById(_id);
