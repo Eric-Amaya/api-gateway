@@ -5,6 +5,7 @@ import { LoginRequestDto, RegisterRequestDto } from './dto/auth.dto';
 import { UserRequestDto } from './dto/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 
 
 @Injectable()
@@ -105,4 +106,10 @@ export class AuthService {
   deleteUser(_id: string): Promise<string> {
     return firstValueFrom(this.client.send('delete-user', { _id }));
   }
+
+  async updateUserDocument(_id: string, document: UpdateDocumentDto): Promise<any> {
+  return firstValueFrom(
+    this.client.send('update-user-document', { _id, document })
+  );
+}
 }
