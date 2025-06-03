@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, Inject, Param, Patch, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ChangePasswordRequestDto, LoginRequestDto, RegisterRequestDto } from './dto/auth.dto';
 import { UserRequestDto } from './dto/user.dto';
@@ -7,9 +7,6 @@ import { Roles } from './decorators/role.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Request, Response } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
-import { Role } from './enum/role.enum';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {
@@ -49,28 +46,41 @@ export class AuthController {
         return res.status(200).json({ message: 'Sesión cerrada' });
     }
 
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
-    @Post('register')
+    //@UseGuards(JwtAuthGuard, RolesGuard)
+    //@Roles(Role.ADMIN || "admin")
+   @Post('register')
     async register(
-        @Body() payload: RegisterRequestDto,
-        @Req() req: any,
+    @Body() payload: RegisterRequestDto,
+    @Req() req: any,
     ) {
+    try {
+        await this.authService.register(payload);
 
-        try {
-            await this.authService.register(payload);
-
-            await firstValueFrom(this.activitiesClient.send('create-activity', {
-                user: req.user.id,
-                action: 'Registro de un nuevo usuario',
-            }));
-
-        } catch (error) {
-            throw new ConflictException(
-                typeof error === 'string' ? error : error.message || 'Error desconocido'
-            );
+        // Solo si tienes un usuario autenticado (ej. registro por admin)
+        if (req.user?.id) {
+        await firstValueFrom(this.activitiesClient.send('create-activity', {
+            user: req.user.id,
+            action: `Registro de un nuevo usuario`,
+        }));
         }
+
+        return { message: 'Usuario registrado correctamente' };
+
+    } catch (error) {
+        console.error('Error al registrar usuario:', error);
+
+        if (error instanceof ConflictException) {
+        throw error; // ya viene manejado
+        }
+
+        if (error?.message?.includes('correo ya está registrado')) {
+        throw new ConflictException('El correo ya está registrado');
+        }
+
+        throw new ConflictException(error?.message || 'Error al registrar usuario');
     }
+    }
+
 
     @Post('change-password')
     changePassword(@Body() payload: ChangePasswordRequestDto): Promise<string> {
@@ -110,4 +120,15 @@ export class AuthController {
     deleteUser(@Param('_id') _id: string): Promise<string> {
         return this.authService.deleteUser(_id);
     }
+
+    @Patch('user/:_id/documents')
+    //seGuards(JwtAuthGuard)
+    updateUserDocument(
+    @Param('_id') _id: string,
+    @Body() document: UpdateDocumentDto,
+    ) {
+    return this.authService.updateUserDocument(_id, document);
+    }
+
+
 }
