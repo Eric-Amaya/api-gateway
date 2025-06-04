@@ -7,6 +7,10 @@ import { Roles } from './decorators/role.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Request, Response } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import { Role } from './enum/role.enum';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 
 @Controller('auth')
 export class AuthController {

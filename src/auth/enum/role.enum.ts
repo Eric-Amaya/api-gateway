@@ -1,12 +1,12 @@
 export enum Role {
-  ADMIN = 'Admin',
+  ADMIN = 'admin',
   INVESTIGADOR = 'investigador',
-  COORDINADOR = 'Coordinador',
-  ENFERMERIA = 'Enfermeria',
-  DATAENTRY = 'Dataentry',
-  REGULATORIO = 'Regulatorio',
-  Tens = 'Tens',
-  VIEWER = 'Viewer',
+  COORDINADOR = 'coordinador',
+  ENFERMERIA = 'enfermeria',
+  DATAENTRY = 'dataentry',
+  REGULATORIO = 'regulatorio',
+  Tens = 'tens',
+  VIEWER = 'viewer',
 }
 
 export enum RolEquipo {

@@ -1,22 +1,22 @@
 import { Module } from '@nestjs/common';
+import { PatientsController } from './patients.controller';
+import { AuthModule } from 'src/auth/auth.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CommentsController } from './comment.controller';
-import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
     AuthModule,
     ClientsModule.register([
       {
-        name: 'COMMENTS_SERVICE',
+        name: 'PATIENTS_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: 'ms-comments-service',
-          port: 3008, 
+          host: 'ms-pacientes',
+          port: 3003,
         },
       },
     ]),
   ],
-  controllers: [CommentsController],
+  controllers: [PatientsController]
 })
-export class CommentsModule {}
+export class PatientsModule {}

@@ -72,7 +72,7 @@ export class AuthService {
           // Retornar solo accessToken al frontend
           res.json({ accessToken});
         } catch (error) {
-          res.status(401).json({ message: 'Credenciales inválidas' });
+          res.status(401).json({ message: 'Credenciales inválidas'});
         }
     }
       
