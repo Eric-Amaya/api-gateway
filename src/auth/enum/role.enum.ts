@@ -1,12 +1,13 @@
 export enum Role {
-  ADMIN = 'admin',
-  INVESTIGADOR = 'investigador',
-  COORDINADOR = 'coordinador',
-  ENFERMERIA = 'enfermeria',
-  DATAENTRY = 'dataentry',
-  REGULATORIO = 'regulatorio',
-  Tens = 'tens',
-  VIEWER = 'viewer',
+  ADMIN = 'Admin',
+  ADMIN2 = 'admin',
+  INVESTIGADOR = 'Investigador',
+  COORDINADOR = 'Coordinador',
+  ENFERMERIA = 'Enfermeria',
+  DATAENTRY = 'Data Entry',
+  REGULATORIO = 'Regulatorio',
+  Tens = 'Tens',
+  VIEWER = 'Viewer',
 }
 
 export enum RolEquipo {
@@ -16,7 +17,7 @@ export enum RolEquipo {
   AsistenteInvestigador = 'Asistente de Investigador', // Asistente de Investigador del estudio el PY , puede utilizarse para el equipo de investigacion
   DirectorCalidad = 'Director de Calidad', // Director de Calidad del centro , esta persona en general es la que se encarga de la calidad del centro y de los estudios que se realizan en el centro
   DirectorEjecutivo = 'Director Ejecutivo', // Director Ejecutivo del centro , esta persona en general es la que se encarga de la ejecucion del centro y de los estudios que se realizan en el centro
-  Enfermero = 'Enfermero', // Enfermero del centro , esta persona en general es la que se encarga de la enfermería del centro y de los estudios que se realizan en el centro
+  Enfermeria = 'Enfermero(a) Clinico(a)', // Enfermero del centro , esta persona en general es la que se encarga de la enfermería del centro y de los estudios que se realizan en el centro
   JefaturaTens = 'Jefatura Tens', // Jefatura de Tens del centro , esta persona en general es la que se encarga de la jefatura de los tens del centro y de los estudios que se realizan en el centro
   JefaturaEnfermeria = 'Jefatura Enfermería',// Jefatura de Enfermería del centro , esta persona en general es la que se encarga de la jefatura de los enfermeros del centro y de los estudios que se realizan en el centro
   JefaturaCoordinador = 'Jefatura Coordinador', // Jefatura de Coordinador del centro , esta persona en general es la que se encarga de la jefatura de los coordinadores del centro y de los estudios que se realizan en el centro

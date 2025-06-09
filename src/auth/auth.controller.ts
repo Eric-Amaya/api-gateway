@@ -7,10 +7,10 @@ import { Roles } from './decorators/role.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Request, Response } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Role } from './enum/role.enum';
-import { UpdateDocumentDto } from './dto/update-document.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -51,7 +51,7 @@ export class AuthController {
     }
 
     //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles(Role.ADMIN || "admin")
+    //@Roles(Role.ADMIN , Role.ADMIN2)
    @Post('register')
     async register(
     @Body() payload: RegisterRequestDto,
@@ -98,13 +98,13 @@ export class AuthController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN ,Role.ADMIN2)
     @Get('user/:_id')
     getUserById(@Param('_id') _id: string): Promise<UserRequestDto | null> {
         return this.authService.getUserById(_id);
     }
 
-    @UseGuards(JwtAuthGuard)
+    //@UseGuards(JwtAuthGuard)
     @Get('users')
     getUsers(): Promise<UserRequestDto[]> {
         return this.authService.getAllUsers();
