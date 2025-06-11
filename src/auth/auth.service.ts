@@ -6,12 +6,14 @@ import { UserRequestDto } from './dto/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { UpdateDocumentDto } from './dto/update-document.dto';
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
 export class AuthService {
     constructor(
       private jwtService: JwtService,
+      private configService: ConfigService,
       @Inject('AUTHENTICATION_SERVICE') private readonly client: ClientProxy, 
       @Inject('ACTIVITIES_SERVICE') private readonly activitiesClient: ClientProxy,
     ) {}
@@ -54,12 +56,12 @@ export class AuthService {
     
           const accessToken = this.jwtService.sign(
             { id: user.id, email: user.email, role: user.role },
-            { expiresIn: '15m' }
+            { expiresIn: this.configService.get('JWT_EXPIRES_IN') || '15m' }
           );
         
           const refreshToken = this.jwtService.sign(
             { id: user.id },
-            { expiresIn: '7d' }
+            { expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN') || '7d' }
           );
 
           res.cookie('refreshToken', refreshToken, {

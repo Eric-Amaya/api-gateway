@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PatientsController } from './patients.controller';
-import { AuthModule } from 'src/auth/auth.module';
+import { FeasibilitiesController } from './feasibilities.controller';
+import { AuthModule } from '../auth/auth.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -9,14 +9,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     AuthModule,
     ClientsModule.registerAsync([
       {
-        name: 'PATIENTS_SERVICE',
+        name: 'FEASIBILITIES_SERVICE',
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,
           options: {
-            host: configService.get<string>('PATIENTS_SERVICE_HOST') || 'localhost',
-            port: configService.get<number>('PATIENTS_SERVICE_PORT') || 3003,
+            host: configService.get<string>('FEASIBILITIES_SERVICE_HOST'),
+            port: configService.get<number>('FEASIBILITIES_SERVICE_PORT'),
           },
         }),
       },
@@ -34,6 +34,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       },
     ]),
   ],
-  controllers: [PatientsController]
+  controllers: [FeasibilitiesController]
 })
-export class PatientsModule {}
+export class FeasibilitiesModule {}

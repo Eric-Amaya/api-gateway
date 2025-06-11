@@ -7,15 +7,21 @@ import { CommentsModule } from './comments/comment.module';
 import { ActivitiesModule } from './activities/activities.module';
 import { VisitsModule } from './visits/visits.module';
 import { PatientsModule } from './patients/patients.module';
+import { StudiesModule } from './studies/studies.module';
+import { FeasibilitiesModule } from './feasibilities/feasibilities.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ 
+      isGlobal: true 
+    }),
     AuthModule,
     CommentsModule,
     ActivitiesModule,
     VisitsModule,
     PatientsModule,
+    StudiesModule,
+    FeasibilitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

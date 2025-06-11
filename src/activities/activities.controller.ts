@@ -10,11 +10,11 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { CreateActivityDto } from './dto/activity.dto';
-import { JwtRefreshGuard } from '../auth/guards/jwt-refresh.guard';
 import { firstValueFrom } from 'rxjs';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('activities')
-@UseGuards(JwtRefreshGuard)
+@UseGuards(JwtAuthGuard)
 export class ActivitiesController {
   constructor(
     @Inject('ACTIVITIES_SERVICE')

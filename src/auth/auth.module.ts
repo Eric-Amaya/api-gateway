@@ -21,18 +21,32 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       }),
       inject: [ConfigService],
     }),
-    ClientsModule.register([
-    {
-      name: 'AUTHENTICATION_SERVICE',
-      transport: Transport.TCP,
-      options: { host: 'auth-service', port: 3001 },
-    },
-    {
-      name: 'ACTIVITIES_SERVICE',
-      transport: Transport.TCP,
-      options: { host: 'auth-service', port: 3001 },
-    },
-  ]),
+    ClientsModule.registerAsync([
+      {
+        name: 'AUTHENTICATION_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get<string>('AUTH_SERVICE_HOST'),
+            port: config.get<number>('AUTH_SERVICE_PORT'),
+          },
+        }),
+      },
+      {
+        name: 'ACTIVITIES_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get<string>('AUTH_SERVICE_HOST'), // mismo host y puerto
+            port: config.get<number>('AUTH_SERVICE_PORT'),
+          },
+        }),
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtAuthGuard, JwtRefreshGuard, RolesGuard],

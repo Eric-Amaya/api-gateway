@@ -50,39 +50,37 @@ export class AuthController {
         return res.status(200).json({ message: 'Sesión cerrada' });
     }
 
-    //@UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles(Role.ADMIN || "admin")
-   @Post('register')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
+    @Post('register')
     async register(
-    @Body() payload: RegisterRequestDto,
-    @Req() req: any,
+        @Body() payload: RegisterRequestDto,
+        @Req() req: any,
     ) {
-    try {
-        await this.authService.register(payload);
+        try {
+            await this.authService.register(payload);
+            if (req.user?.id) {
+                await firstValueFrom(this.activitiesClient.send('create-activity', {
+                    user: req.user.id,
+                    action: `Registro de un nuevo usuario`,
+                }));
+            }
 
-        // Solo si tienes un usuario autenticado (ej. registro por admin)
-        if (req.user?.id) {
-        await firstValueFrom(this.activitiesClient.send('create-activity', {
-            user: req.user.id,
-            action: `Registro de un nuevo usuario`,
-        }));
+            return { message: 'Usuario registrado correctamente' };
+
+        } catch (error) {
+            console.error('Error al registrar usuario:', error);
+
+            if (error instanceof ConflictException) {
+            throw error; 
+            }
+
+            if (error?.message?.includes('correo ya está registrado')) {
+            throw new ConflictException('El correo ya está registrado');
+            }
+
+            throw new ConflictException(error?.message || 'Error al registrar usuario');
         }
-
-        return { message: 'Usuario registrado correctamente' };
-
-    } catch (error) {
-        console.error('Error al registrar usuario:', error);
-
-        if (error instanceof ConflictException) {
-        throw error; // ya viene manejado
-        }
-
-        if (error?.message?.includes('correo ya está registrado')) {
-        throw new ConflictException('El correo ya está registrado');
-        }
-
-        throw new ConflictException(error?.message || 'Error al registrar usuario');
-    }
     }
 
 

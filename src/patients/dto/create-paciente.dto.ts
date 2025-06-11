@@ -49,7 +49,6 @@ export class CreatePacienteDto {
   @IsDateString()
   fechaNacimiento: string;
 
-
   @IsEnum(EstadoPaciente, { message: 'Estado inválido' })
   estado: EstadoPaciente;
 

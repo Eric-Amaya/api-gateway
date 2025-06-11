@@ -1,26 +1,39 @@
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { JwtRefreshGuard } from '../auth/guards/jwt-refresh.guard';
 import { CreateVisitaDto } from './dto/CreateVisitaDto';
 import { firstValueFrom } from 'rxjs';
 import { UpdateVisitaDto } from './dto/UpdateVisitaDto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('visits')
+@UseGuards(JwtAuthGuard)
 export class VisitsController {
     constructor(
         @Inject('VISITS_SERVICE') private readonly visitsClient: ClientProxy, 
+        @Inject('ACTIVITIES_SERVICE')
+        private readonly activitiesClient: ClientProxy,
     ) {}
 
     @Post()
-    @UseGuards(JwtRefreshGuard)
-    async create(@Body() data:CreateVisitaDto) {
-        return firstValueFrom(
-            this.visitsClient.send('create_visit', data)
+    async create(
+        @Body() payload:CreateVisitaDto,
+        @Req() req: any,
+    ) {
+        const data = await firstValueFrom(
+            this.visitsClient.send('create_visit', payload)
         );
+
+        if(req.user?.id) {
+            await firstValueFrom(this.activitiesClient.send('create-activity', {
+                user: req.user.id,
+                action: `Registro de una nueva visita`,
+            })); 
+        }
+
+        return data;
     }
 
     @Get()
-    @UseGuards(JwtRefreshGuard)
     async getAll() {
         return firstValueFrom(
             this.visitsClient.send('get_all_visits', {})
@@ -28,7 +41,6 @@ export class VisitsController {
     }
 
     @Get(':id')
-    @UseGuards(JwtRefreshGuard)
     async getById(@Param('id') id: string) {
         return firstValueFrom(
             this.visitsClient.send('get_visit_by_id', id )
@@ -36,23 +48,45 @@ export class VisitsController {
     }
 
     @Patch(':id')
-    @UseGuards(JwtRefreshGuard)
-    async update(@Param('id') id: string, @Body() data: UpdateVisitaDto) {
-        return firstValueFrom(
-            this.visitsClient.send('update_visit', { id, data })
+    async update(
+        @Param('id') id: string, 
+        @Body() payload: UpdateVisitaDto,
+        @Req() req: any,
+    ) {
+        const data = await firstValueFrom(
+            this.visitsClient.send('update_visit', { id, payload })
         );
+
+        if(req.user?.id) {
+            await firstValueFrom(this.activitiesClient.send('create-activity', {
+                user: req.user.id,
+                action: `Actualización de la información de una visita - ${data.tipo}`,
+            })); 
+        }
+
+        return data;
     }
 
     @Delete(':id')
-    @UseGuards(JwtRefreshGuard)
-    async delete(@Param('id') id: string) {
-        return firstValueFrom(
+    async delete(
+        @Param('id') id: string,
+        @Req() req: any,
+    ) {
+        const data = await firstValueFrom(
             this.visitsClient.send('delete_visit', id )
         );
+
+        if(req.user?.id) {
+            await firstValueFrom(this.activitiesClient.send('create-activity', {
+                user: req.user.id,
+                action: `Eliminación de una visita - ${data.tipo}`,
+            })); 
+        }
+
+        return data;
     }
 
     @Get('search/by-reference')
-    @UseGuards(JwtRefreshGuard)
     async getVisitsByReference(@Query('referenciaId') referenciaId: string) {
         return firstValueFrom(
             this.visitsClient.send('visitas_totales_por_referencia', referenciaId )
@@ -60,7 +94,6 @@ export class VisitsController {
     }
 
     @Get('filter/by-type')
-    @UseGuards(JwtRefreshGuard)
     async filterByType(@Query('tipo') tipo: string, @Query('referenciaId') referenciaId: string) {
         return firstValueFrom(
             this.visitsClient.send('filtrar_por_tipo', { tipo, referenciaId })
@@ -68,14 +101,23 @@ export class VisitsController {
     }
 
     @Patch(':id/status')
-    @UseGuards(JwtRefreshGuard)
     async updateStatus(
         @Param('id') id: string,
+        @Req() req: any,
         @Query('estado') estado: string,
-        @Query('numeroTomo') numeroTomo?: string
+        @Query('numeroTomo') numeroTomo?: string,
     ) {
-        return firstValueFrom(
+        const data = await firstValueFrom(
             this.visitsClient.send('update_visit_status', { id, estado, numeroTomo })
         );
+
+        if(req.user?.id) {
+            await firstValueFrom(this.activitiesClient.send('create-activity', {
+                user: req.user.id,
+                action: `Actualización del estado de una visita - ${data.tipo}`,
+            })); 
+        }
+
+        return data;
     }
 }

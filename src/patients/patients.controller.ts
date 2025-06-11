@@ -7,88 +7,168 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
-import { JwtRefreshGuard } from '../auth/guards/jwt-refresh.guard';
 import { firstValueFrom } from 'rxjs';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { UpdateConsentimientoDto } from './dto/update-consentimiento.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('patients')
+@UseGuards(JwtAuthGuard)
 export class PatientsController {
   constructor(
-    @Inject('PATIENTS_SERVICE') private readonly patientsClient: ClientProxy,
+    @Inject('PATIENTS_SERVICE') 
+      private readonly patientsClient: ClientProxy,
+    @Inject('ACTIVITIES_SERVICE')
+        private readonly activitiesClient: ClientProxy,
   ) {}
 
   @Post()
-  @UseGuards(JwtRefreshGuard)
-  create(@Body() dto: CreatePacienteDto) {
-    return firstValueFrom(this.patientsClient.send('create_patient', dto));
+  async create(
+    @Body() dto: CreatePacienteDto,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(this.patientsClient.send('create_patient', dto));
+
+    if(req.user?.id) {
+      await firstValueFrom(this.activitiesClient.send('create-activity', {
+        user: req.user.id,
+        action: `Registro de un nuevo paciente - ${data.codigo}`,
+      })); 
+    }
+
+    return data;
   }
 
   @Get()
-  @UseGuards(JwtRefreshGuard)
-  findAll() {
-    return firstValueFrom(this.patientsClient.send('get_all_patients', {}));
+  async findAll() {
+    return await firstValueFrom(this.patientsClient.send('get_all_patients', {}));
   }
 
   @Get('study/:estudioId')
-  @UseGuards(JwtRefreshGuard)
-  findByEstudio(@Param('estudioId') estudioId: string) {
-    return firstValueFrom(this.patientsClient.send('get_patients_by_study', estudioId));
+  async findByEstudio(@Param('estudioId') estudioId: string) {
+    return await firstValueFrom(this.patientsClient.send('get_patients_by_study', estudioId));
   }
 
   @Get(':id')
-  @UseGuards(JwtRefreshGuard)
-  findOne(@Param('id') id: string) {
-    return firstValueFrom(this.patientsClient.send('get_patient_by_id', id));
+  async findOne(@Param('id') id: string) {
+    return await firstValueFrom(this.patientsClient.send('get_patient_by_id', id));
   }
 
   @Patch(':id')
-  @UseGuards(JwtRefreshGuard)
-  update(@Param('id') id: string, @Body() dto: UpdatePacienteDto) {
-    return firstValueFrom(this.patientsClient.send('update_patient', { id, dto }));
+  async update(
+    @Param('id') id: string, 
+    @Body() dto: UpdatePacienteDto,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(this.patientsClient.send('update_patient', { id, dto }));
+    
+    if(req.user?.id) {
+      await firstValueFrom(this.activitiesClient.send('create-activity', {
+        user: req.user.id,
+        action: `Actualización de la información de un paciente - ${data.codigo}`,
+      })); 
+    }
+    
+    return data;
   }
 
   @Delete(':id')
-  @UseGuards(JwtRefreshGuard)
-  remove(@Param('id') id: string) {
-    return firstValueFrom(this.patientsClient.send('delete_patient', id));
+  async remove(
+    @Param('id') id: string,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(this.patientsClient.send('delete_patient', id));
+  
+    if(req.user?.id) {
+      await firstValueFrom(this.activitiesClient.send('create-activity', {
+        user: req.user.id,
+        action: `Eliminación de un paciente - ${data.codigo}`,
+      })); 
+    }
+    
+    return data;
+
   }
 
   @Patch(':id/randomize')
-  @UseGuards(JwtRefreshGuard)
-  randomizar(@Param('id') id: string) {
-    return firstValueFrom(this.patientsClient.send('randomize_patient', id));
+  async randomizar(
+    @Param('id') id: string,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(this.patientsClient.send('randomize_patient', id));
+  
+    if(req.user?.id) {
+      await firstValueFrom(this.activitiesClient.send('create-activity', {
+        user: req.user.id,
+        action: `Randomización de un paciente - ${data.codigo}`,
+      })); 
+    }
+
+    return data;
   }
 
   @Patch(':id/consents')
-  @UseGuards(JwtRefreshGuard)
-  addConsent(@Param('id') id: string, @Body() dto: UpdateConsentimientoDto) {
-    return firstValueFrom(this.patientsClient.send('add_consent', { id, dto }));
+  async addConsent(
+    @Param('id') id: string, 
+    @Body() dto: UpdateConsentimientoDto,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(this.patientsClient.send('add_consent', { id, dto }));
+    
+    if(req.user?.id) {
+      await firstValueFrom(this.activitiesClient.send('create-activity', {
+        user: req.user.id,
+        action: `Agregación del consentimiento de un paciente - ${data.codigo}`,
+      })); 
+    }
+
+    return data;
   }
 
   @Patch(':id/consents/:version')
-  @UseGuards(JwtRefreshGuard)
-  editConsent(
+  async editConsent(
     @Param('id') id: string,
     @Param('version') version: string,
     @Body() dto: UpdateConsentimientoDto,
+    @Req() req: any,
   ) {
-    return firstValueFrom(
+    const data = await firstValueFrom(
       this.patientsClient.send('edit_consent', { id, version, dto }),
     );
+
+    if(req.user?.id) {
+      await firstValueFrom(this.activitiesClient.send('create-activity', {
+        user: req.user.id,
+        action: `Actualización del consentimiento de un paciente - ${data.codigo}`,
+      })); 
+    }
+
+    return data;
   }
 
   @Delete(':id/consents/:version')
-  @UseGuards(JwtRefreshGuard)
-  deleteConsent(@Param('id') id: string, @Param('version') version: string) {
-    return firstValueFrom(
+  async deleteConsent(
+    @Param('id') id: string, 
+    @Param('version') version: string,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(
       this.patientsClient.send('delete_consent', { id, version }),
     );
+
+    if(req.user?.id) {
+      await firstValueFrom(this.activitiesClient.send('create-activity', {
+        user: req.user.id,
+        action: `Eliminación del consentimiento de un paciente - ${data.codigo}`,
+      })); 
+    }
+
+    return data;
   }
 }
