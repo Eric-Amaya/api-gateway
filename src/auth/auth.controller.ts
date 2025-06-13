@@ -8,6 +8,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { Request, Response } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { UpdateDocumentDto } from './dto/update-document.dto';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Role } from './enum/role.enum';
@@ -97,11 +98,13 @@ export class AuthController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN ,Role.ADMIN2)
+    @Roles(Role.ADMIN ,Role.ADMIN2)
     @Get('user/:_id')
     getUserById(@Param('_id') _id: string): Promise<UserRequestDto | null> {
         return this.authService.getUserById(_id);
     }
 
+    //@UseGuards(JwtAuthGuard)
     //@UseGuards(JwtAuthGuard)
     @Get('users')
     getUsers(): Promise<UserRequestDto[]> {
