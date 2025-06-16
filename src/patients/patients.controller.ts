@@ -17,9 +17,13 @@ import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { UpdateConsentimientoDto } from './dto/update-consentimiento.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/role.decorator';
+import { Role } from '../auth/enum/role.enum';
 
 @Controller('patients')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
 export class PatientsController {
   constructor(
     @Inject('PATIENTS_SERVICE') 

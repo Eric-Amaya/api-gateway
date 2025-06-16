@@ -108,7 +108,8 @@ export class AuthController {
         return this.authService.getAllUsers();
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Put('user/edit/:_id')
     updateUser(
         @Param('_id') _id: string,
@@ -117,12 +118,14 @@ export class AuthController {
         return this.authService.updateUser(_id, updateData);
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
     @Delete('user/:_id')
     deleteUser(@Param('_id') _id: string): Promise<string> {
         return this.authService.deleteUser(_id);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Patch('user/:_id/documents')
     //seGuards(JwtAuthGuard)
     updateUserDocument(
