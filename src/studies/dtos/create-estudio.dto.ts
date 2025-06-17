@@ -105,6 +105,9 @@ export class CreateEstudioDto {
   @IsOptional() @IsDateString() cierreReclutamiento?: string;
   @IsOptional() @IsDateString() visitaCierre?: string;
   @IsOptional() @IsDateString() fechaCierreEstudio?: string;
+  @IsOptional() @IsDateString() fechaSeleccion: string;                // 15. Fecha de selección del estudio
+
+
 
   // ⏳ DURACIÓN
   @IsOptional()

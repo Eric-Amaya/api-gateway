@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateEstudioDto } from './dtos/create-estudio.dto';
-import { MiembroEquipoDto } from './dtos/asignar-equipo.dto';
+import { AsignarEquipoDto, MiembroEquipoDto } from './dtos/asignar-equipo.dto';
 import { UpdateAgentesDto } from './dtos/update-agentes.dto';
 import { UpdateDocumentosDto } from './dtos/update-documentos.dto';
 import { UpdateEstudioDto } from './dtos/update-estudio.dto';
@@ -29,10 +29,7 @@ export class StudiesController {
   ) {}
 
   @Post()
-  async create(
-    @Body() dto: CreateEstudioDto,
-    @Req() req: any,
-  ) {
+  async create(@Body() dto: CreateEstudioDto, @Req() req: any) {
     const data = await firstValueFrom(
       this.studiesClient.send('crear_estudio_desde_factibilidad', dto),
     );
@@ -61,18 +58,21 @@ export class StudiesController {
 
   @Patch(':id')
   async patch(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() dto: UpdateEstudioDto,
     @Req() req: any,
   ) {
     const data = await firstValueFrom(
-      this.studiesClient.send('update_study', { id, dto }));
+      this.studiesClient.send('update_study', { id, update: dto }),
+    );
 
     if (req.user?.id) {
-      await firstValueFrom(this.activitiesClient.send('create-activity', {
-        user: req.user.id,
-        action: `Actualización del estudio - ${data.titulo}`,
-      }));
+      await firstValueFrom(
+        this.activitiesClient.send('create-activity', {
+          user: req.user.id,
+          action: `Actualización del estudio - ${data.titulo}`,
+        }),
+      );
     }
 
     return data;
@@ -80,55 +80,66 @@ export class StudiesController {
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(
-    @Param('id') id: string,
-    @Req() req: any,
-  ){
+  async remove(@Param('id') id: string, @Req() req: any) {
     const data = await firstValueFrom(
-      this.studiesClient.send('delete_study', id));
+      this.studiesClient.send('delete_study', id),
+    );
 
     if (req.user?.id) {
-      await firstValueFrom(this.activitiesClient.send('create-activity', {
-        user: req.user.id,
-        action: `Eliminación del estudio - ${data.titulo}`,
-      }))
-    }  
+      await firstValueFrom(
+        this.activitiesClient.send('create-activity', {
+          user: req.user.id,
+          action: `Eliminación del estudio - ${data.titulo}`,
+        }),
+      );
+    }
 
     return data;
   }
 
   @Patch(':id/equipo')
-  async asignarEquipo(
-    @Param('id') id: string, 
-    @Body() dto: MiembroEquipoDto,
-    @Req() req: any,
-  ) {
-    const data = await firstValueFrom(
-      this.studiesClient.send('asignar_equipo', { id, equipo: [dto] }));
-    
-      if (req.user?.id) {
-      await firstValueFrom(this.activitiesClient.send('create-activity', {
+async asignarEquipo(
+  @Param('id') id: string,
+  @Body() dto: AsignarEquipoDto, // 👈 usa el DTO que contiene equipo: MiembroEquipoDto[]
+  @Req() req: any,
+) {
+  const data = await firstValueFrom(
+    this.studiesClient.send('asignar_equipo', { id, equipo: dto.equipo }),
+  );
+
+  if (req.user?.id) {
+    await firstValueFrom(
+      this.activitiesClient.send('create-activity', {
         user: req.user.id,
         action: `Asignación de un miembro al equipo del estudio - ${data.titulo}`,
-      }));
-    }
-    return data;
+      }),
+    );
   }
+
+  return data;
+}
+
 
   @Patch(':id/agentes')
   async updateAgentes(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() dto: UpdateAgentesDto,
     @Req() req: any,
   ) {
     const data = await firstValueFrom(
-      this.studiesClient.send('update_agentes', { id, agentes: dto.agentes }));
-    
+      this.studiesClient.send('update_agentes', {
+        id,
+        agentes: dto.agentes,
+      }),
+    );
+
     if (req.user?.id) {
-      await firstValueFrom(this.activitiesClient.send('create-activity', {
-        user: req.user.id,
-        action: `Actualización de agentes del estudio - ${data.titulo}`,
-      }));
+      await firstValueFrom(
+        this.activitiesClient.send('create-activity', {
+          user: req.user.id,
+          action: `Actualización de agentes del estudio - ${data.titulo}`,
+        }),
+      );
     }
 
     return data;
@@ -141,16 +152,21 @@ export class StudiesController {
     @Req() req: any,
   ) {
     const data = await firstValueFrom(
-      this.studiesClient.send('update_documentos', { id, documentos: dto.documentos }));
-    
+      this.studiesClient.send('update_documentos', {
+        id,
+        documentos: dto.documentos,
+      }),
+    );
+
     if (req.user?.id) {
-      await firstValueFrom(this.activitiesClient.send('create-activity', {
-        user: req.user.id,
-        action: `Actualización de documentos del estudio - ${data.titulo}`,
-      }));
+      await firstValueFrom(
+        this.activitiesClient.send('create-activity', {
+          user: req.user.id,
+          action: `Actualización de documentos del estudio - ${data.titulo}`,
+        }),
+      );
     }
 
     return data;
   }
 }
-// 
