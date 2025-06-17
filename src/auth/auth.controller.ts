@@ -8,7 +8,6 @@ import { RolesGuard } from './guards/roles.guard';
 import { Request, Response } from 'express';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { UpdateDocumentDto } from './dto/update-document.dto';
-import { UpdateDocumentDto } from './dto/update-document.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { Role } from './enum/role.enum';

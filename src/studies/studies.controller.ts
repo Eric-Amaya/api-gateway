@@ -49,6 +49,27 @@ export class StudiesController {
     return data;
   }
 
+  @Post("manual")
+  async createManual(
+    @Body() dto: CreateEstudioDto,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(
+      this.studiesClient.send('crear_estudio', dto),
+    );
+
+    if (req.user?.id) {
+      await firstValueFrom(
+        this.activitiesClient.send('create-activity', {
+          user: req.user.id,
+          action: `Registro de un nuevo estudio - ${data.titulo}`,
+        }),
+      );
+    }
+
+    return data;
+  }
+
   @Get()
   async findAll() {
     return firstValueFrom(this.studiesClient.send('get_all_studies', {}));
