@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateVisitaDto } from './dto/CreateVisitaDto';
 import { firstValueFrom } from 'rxjs';
@@ -53,37 +53,37 @@ export class VisitsController {
         @Body() payload: UpdateVisitaDto,
         @Req() req: any,
     ) {
-        const data = await firstValueFrom(
+        const response = await firstValueFrom(
             this.visitsClient.send('update_visit', { id, payload })
         );
 
         if(req.user?.id) {
             await firstValueFrom(this.activitiesClient.send('create-activity', {
                 user: req.user.id,
-                action: `Actualización de la información de una visita - ${data.tipo}`,
+                action: `Actualización de la información de una visita - ${payload.tipo}`,
             })); 
         }
 
-        return data;
+        return response;
     }
 
+    @HttpCode(204)
     @Delete(':id')
     async delete(
         @Param('id') id: string,
         @Req() req: any,
     ) {
-        const data = await firstValueFrom(
+        await firstValueFrom(
             this.visitsClient.send('delete_visit', id )
         );
 
         if(req.user?.id) {
             await firstValueFrom(this.activitiesClient.send('create-activity', {
                 user: req.user.id,
-                action: `Eliminación de una visita - ${data.tipo}`,
+                action: `Eliminación de una visita`,
             })); 
         }
 
-        return data;
     }
 
     @Get('search/by-reference')

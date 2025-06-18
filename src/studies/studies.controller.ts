@@ -119,18 +119,16 @@ export class StudiesController {
   }
 
   @Patch(':id/equipo')
-async asignarEquipo(
-  @Param('id') id: string,
-  @Body() dto: AsignarEquipoDto, // 👈 usa el DTO que contiene equipo: MiembroEquipoDto[]
-  @Req() req: any,
-) {
-  const data = await firstValueFrom(
-    this.studiesClient.send('asignar_equipo', { id, equipo: dto.equipo }),
-  );
-
-  if (req.user?.id) {
-    await firstValueFrom(
-      this.activitiesClient.send('create-activity', {
+  async asignarEquipo(
+    @Param('id') id: string, 
+    @Body() dto: AsignarEquipoDto,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(
+      this.studiesClient.send('asignar_equipo', { id, equipo: [dto] }));
+    
+      if (req.user?.id) {
+      await firstValueFrom(this.activitiesClient.send('create-activity', {
         user: req.user.id,
         action: `Asignación de un miembro al equipo del estudio - ${data.titulo}`,
       }),
