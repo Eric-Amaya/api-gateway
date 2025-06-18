@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateEstudioDto } from './dtos/create-estudio.dto';
-import { MiembroEquipoDto } from './dtos/asignar-equipo.dto';
+import { AsignarEquipoDto, MiembroEquipoDto } from './dtos/asignar-equipo.dto';
 import { UpdateAgentesDto } from './dtos/update-agentes.dto';
 import { UpdateDocumentosDto } from './dtos/update-documentos.dto';
 import { UpdateEstudioDto } from './dtos/update-estudio.dto';
@@ -100,7 +100,7 @@ export class StudiesController {
   @Patch(':id/equipo')
   async asignarEquipo(
     @Param('id') id: string, 
-    @Body() dto: MiembroEquipoDto,
+    @Body() dto: AsignarEquipoDto,
     @Req() req: any,
   ) {
     const data = await firstValueFrom(
