@@ -43,9 +43,6 @@ export class CreatePacienteDto {
   @IsString()
   nombre: string;
 
-  @IsNumber()
-  edad: number;
-
   @IsDateString()
   fechaNacimiento: string;
 

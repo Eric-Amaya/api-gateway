@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateEstudioDto } from './dtos/create-estudio.dto';
-import { AsignarEquipoDto, MiembroEquipoDto } from './dtos/asignar-equipo.dto';
+import { AsignarEquipoDto } from './dtos/asignar-equipo.dto';
 import { UpdateAgentesDto } from './dtos/update-agentes.dto';
 import { UpdateDocumentosDto } from './dtos/update-documentos.dto';
 import { UpdateEstudioDto } from './dtos/update-estudio.dto';
@@ -29,10 +29,7 @@ export class StudiesController {
   ) {}
 
   @Post()
-  async create(
-    @Body() dto: CreateEstudioDto,
-    @Req() req: any,
-  ) {
+  async create(@Body() dto: CreateEstudioDto, @Req() req: any) {
     const data = await firstValueFrom(
       this.studiesClient.send('crear_estudio_desde_factibilidad', dto),
     );
@@ -46,6 +43,26 @@ export class StudiesController {
       );
     }
 
+    return data;
+  }
+
+  @Post("manual")
+  async createManual(
+    @Body() dto: CreateEstudioDto,
+    @Req() req: any,
+  ) {
+    const data = await firstValueFrom(
+      this.studiesClient.send('crear_estudio', dto),
+    );
+
+    if (req.user?.id) {
+      await firstValueFrom(
+        this.activitiesClient.send('create-activity', {
+          user: req.user.id,
+          action: `Registro de un nuevo estudio - ${data.titulo}`,
+        }),
+      );
+    }
     return data;
   }
 
@@ -66,7 +83,8 @@ export class StudiesController {
     @Req() req: any,
   ) {
     const data = await firstValueFrom(
-      this.studiesClient.send('update_study', { id, dto }));
+      this.studiesClient.send('update_study', { id, update: dto }),
+    );
 
     if (req.user?.id) {
       await firstValueFrom(this.activitiesClient.send('create-activity', {
@@ -104,7 +122,8 @@ export class StudiesController {
     @Req() req: any,
   ) {
     const data = await firstValueFrom(
-      this.studiesClient.send('asignar_equipo', { id, equipo: [dto] }));
+      this.studiesClient.send('asignar_equipo', { id, equipo: dto.equipo }) 
+    );
     
       if (req.user?.id) {
       await firstValueFrom(this.activitiesClient.send('create-activity', {
