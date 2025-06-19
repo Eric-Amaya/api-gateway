@@ -96,8 +96,6 @@ export class AuthController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN ,Role.ADMIN2)
-    @Roles(Role.ADMIN ,Role.ADMIN2)
     @Get('user/:_id')
     getUserById(@Param('_id') _id: string): Promise<UserRequestDto | null> {
         return this.authService.getUserById(_id);
