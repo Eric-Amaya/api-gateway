@@ -1,7 +1,7 @@
 export enum EstadoFactibilidad {
   Pendiente = 'Pendiente',
   EnRevision = 'En revisión',
-  Rechazado = 'Rechazado',
+  NoSeleccionado = 'No Seleccionado',
   Seleccionado = 'Seleccionado',
 }
 export enum EstadoEstudio {
