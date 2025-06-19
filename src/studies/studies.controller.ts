@@ -125,7 +125,8 @@ export class StudiesController {
     @Req() req: any,
   ) {
     const data = await firstValueFrom(
-      this.studiesClient.send('asignar_equipo', { id, equipo: [dto] }));
+      this.studiesClient.send('asignar_equipo', { id, equipo: dto.equipo }) 
+    );
     
       if (req.user?.id) {
       await firstValueFrom(this.activitiesClient.send('create-activity', {

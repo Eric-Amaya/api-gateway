@@ -50,8 +50,8 @@ export class AuthController {
         return res.status(200).json({ message: 'Sesión cerrada' });
     }
 
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
+    //@UseGuards(JwtAuthGuard, RolesGuard)
+    //@Roles(Role.ADMIN)
     @Post('register')
     async register(
         @Body() payload: RegisterRequestDto,
@@ -111,7 +111,7 @@ export class AuthController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
+    @Roles(Role.ADMIN , Role.ADMIN2)
     @Put('user/edit/:_id')
     updateUser(
         @Param('_id') _id: string,

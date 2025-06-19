@@ -23,7 +23,7 @@ import { Role } from '../auth/enum/role.enum';
 
 @Controller('patients')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN)
+@Roles(Role.ADMIN, Role.ADMIN2)
 export class PatientsController {
   constructor(
     @Inject('PATIENTS_SERVICE') 
