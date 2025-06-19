@@ -43,6 +43,7 @@ export class DocumentoDto {
 
 export class CreateEstudioDto {
   // 🧠 INFORMACIÓN GENERAL DEL ESTUDIO
+  
   @IsOptional() @IsString() protocolo?: string;
   @IsOptional() @IsString() titulo?: string;
   @IsOptional() @IsString() patologia?: string;
@@ -105,6 +106,9 @@ export class CreateEstudioDto {
   @IsOptional() @IsDateString() cierreReclutamiento?: string;
   @IsOptional() @IsDateString() visitaCierre?: string;
   @IsOptional() @IsDateString() fechaCierreEstudio?: string;
+  @IsOptional() @IsDateString() fechaSeleccion: string;                // 15. Fecha de selección del estudio
+
+
 
   // ⏳ DURACIÓN
   @IsOptional()
