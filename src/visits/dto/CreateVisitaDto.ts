@@ -77,6 +77,7 @@ export class CreateVisitaDto {
     fecha: Date;
     estado: string;
     motivo: string;
+    detalle?: string;
   }[];
 
   @IsOptional()
@@ -95,4 +96,8 @@ export class CreateVisitaDto {
 
   @IsOptional()
   numeroTomo?: number;
+
+  @IsOptional()
+  @IsString()
+  detalle?: string;
 }
