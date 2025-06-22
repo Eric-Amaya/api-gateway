@@ -14,6 +14,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { CreateFactibilidadDto } from './dto/create-factibilidad.dto';
 import { UpdateFactibilidadDto } from './dto/update-factibilidad.dto';
 import { firstValueFrom } from 'rxjs';
+import { plainToInstance } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 
 @Controller('feasibilities')
 @UseGuards(JwtAuthGuard)
@@ -58,21 +60,30 @@ export class FeasibilitiesController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() dto: UpdateFactibilidadDto,
-    @Req() req: any,
-  ) {
-    const data = await firstValueFrom(
-      this.feasibilitiesClient.send('update_feasibility', { id, dto }));
-    
-    if (req.user?.id) {
-      await firstValueFrom(this.activitiesClient.send('create-activity', {
-        user: req.user.id,
-        action: `Actualización de factibilidad - ${data.code}`,
-      }));
-    }  
-    
-    return data;
+async update(
+  @Param('id') id: string,
+  @Body() body: any,
+  @Req() req: any,
+) {
+  const dto = plainToInstance(UpdateFactibilidadDto, body);
+
+  await validateOrReject(dto, {
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  });
+
+  const data = await firstValueFrom(
+    this.feasibilitiesClient.send('update_feasibility', { id, dto })
+  );
+
+  if (req.user?.id) {
+    await firstValueFrom(this.activitiesClient.send('create-activity', {
+      user: req.user.id,
+      action: `Actualización de factibilidad - ${data.code}`,
+    }));
   }
+
+  return data;
+}
+
 }
