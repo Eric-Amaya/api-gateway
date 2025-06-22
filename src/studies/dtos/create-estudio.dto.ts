@@ -37,6 +37,7 @@ export class DocumentoDto {
   @IsOptional() @IsString() version?: string;
   @IsOptional() @IsDateString() fecha?: string;
   @IsOptional() @IsString() url?: string;
+  
 }
 
 // DTO principal
