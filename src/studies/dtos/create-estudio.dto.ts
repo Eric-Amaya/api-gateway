@@ -133,4 +133,6 @@ export class CreateEstudioDto {
 
   // 🕓 METADATOS
   @IsOptional() @IsString() resolucionAprobatoria?: string;
+
+  @IsOptional() @IsString() observaciones?: string;
 }
