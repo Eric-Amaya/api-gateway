@@ -83,6 +83,15 @@ export class AuthController {
         }
     }
 
+    @Get('verify-email')
+    verifyEmail(@Query('token') token: string): Promise<string> {
+        return this.authService.verifyEmail(token);
+    }
+
+    @Post('request-password-change')
+    requestPasswordChange(@Body('email') email: string): Promise<string> {
+        return this.authService.requestPasswordChange(email);
+    }
 
     @Post('change-password')
     changePassword(@Body() payload: ChangePasswordRequestDto): Promise<string> {

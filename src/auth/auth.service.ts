@@ -83,6 +83,14 @@ export class AuthService {
     return firstValueFrom(this.client.send('register', payload));
   }
 
+  verifyEmail(token: string): Promise<string> {
+    return firstValueFrom(this.client.send('verify-email', token));
+  }
+
+  requestPasswordChange(email: string): Promise<string> {
+    return firstValueFrom(this.client.send('request-password-change', { email }));
+  }
+
   changePassword(payload): Promise<string> {
     return firstValueFrom(this.client.send('change-password', payload));
   }
