@@ -79,4 +79,7 @@ export class ChangePasswordRequestDto {
 
     @IsString()
     public confirmPassword: string;
+
+    @IsString()
+    public token: string;
 }

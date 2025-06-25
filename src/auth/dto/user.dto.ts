@@ -76,6 +76,35 @@ export class UserRequestDto extends LoginRequestDto {
   public date_incorporation: string;
 
   @Expose()
+  @IsBoolean()
+  emailVerified: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  emailVerificationToken?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  changePasswordToken?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsDateString()
+  changePasswordTokenExpiration?: string | null;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  resetPasswordToken?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsDateString()
+  resetPasswordTokenExpiration?: string | null;
+
+  @Expose()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => RequiredDocumentDto)
