@@ -90,7 +90,6 @@ export class AuthController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
     @Get('user')
     getUser(@Query('email') email: string) {
         return this.authService.getUserByEmail(email);
