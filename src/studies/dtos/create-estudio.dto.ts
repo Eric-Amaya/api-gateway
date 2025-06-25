@@ -37,6 +37,7 @@ export class DocumentoDto {
   @IsOptional() @IsString() version?: string;
   @IsOptional() @IsDateString() fecha?: string;
   @IsOptional() @IsString() url?: string;
+  
 }
 
 // DTO principal
@@ -91,6 +92,8 @@ export class CreateEstudioDto {
   @IsOptional() @IsString() proposalId?: string;
 
   // 📆 FECHAS CLAVE
+    @IsOptional() @IsDateString() fechaSeleccion?: string;
+  
   @IsOptional() @IsDateString() llegadaPaqueteInicial?: string;
   @IsOptional() @IsDateString() sometimientoInicial?: string;
   @IsOptional() @IsDateString() fechaAprobacionSometimiento?: string;
@@ -116,6 +119,20 @@ export class CreateEstudioDto {
   @IsOptional() @IsNumber() pacientesTotales?: number;
   @IsOptional() @IsString() objetivoEstudio?: string;
 
+    @IsOptional()
+  @IsNumber({}, { message: 'Debe ser un número' })
+  patientsCommitmentICLSR?: number;
+
+  @IsOptional()
+  @IsDateString()
+  recruitmentStart?: string;
+
+  @IsOptional()
+  @IsDateString()
+  recruitmentEnd?: string;
+
   // 🕓 METADATOS
   @IsOptional() @IsString() resolucionAprobatoria?: string;
+
+  @IsOptional() @IsString() observaciones?: string;
 }

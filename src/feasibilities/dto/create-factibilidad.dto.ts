@@ -6,9 +6,10 @@ import {
   IsArray,
   ValidateNested,
   IsEnum,
-  IsNumber
+  IsNumber,
+  IsDateString
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { EstadoFactibilidad } from '../enum';
 
 export class AgentDto {
@@ -77,6 +78,25 @@ export class CreateFactibilidadDto {
   @IsOptional()
   @IsString()
   cdaSentDate?: string;
+  
+  @IsOptional()
+  @IsDateString()
+  recruitmentStart?: string; // nuevo campo, fecha de inicio del reclutamiento
+
+  @IsOptional()
+  @IsDateString()
+  recruitmentEnd?: string; // nuevo campo, fecha de fin del reclutamiento
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({}, { message: 'Debe ser un número' })
+  patientsCommitmentICLSR?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({}, { message: 'Debe ser un número' })
+  patientsCommitment?: number;
+
 
   @IsOptional()
   @IsString()
@@ -89,10 +109,6 @@ export class CreateFactibilidadDto {
   @IsOptional()
   @IsString()
   instructionsSummary?: string;
-
-  @IsOptional()
-  @IsNumber()
-  patientsCommitment?: number;
 
   @IsOptional()
   @IsString()
@@ -108,7 +124,9 @@ export class CreateFactibilidadDto {
   @Type(() => AgentDto)
   agents?: AgentDto[];
 
-  @IsIn(['pendiente', 'en revisión', 'seleccionado'])
+  @IsOptional()
+  @IsString()
+  @IsIn(['pendiente', 'en revisión', 'seleccionado' , 'no seleccionado'])
   estadoProceso: string;
 
   @IsBoolean()

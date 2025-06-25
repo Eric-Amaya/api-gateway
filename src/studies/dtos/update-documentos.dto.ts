@@ -12,6 +12,10 @@ export class DocumentoProyectoDto {
   @IsOptional()
   @IsString()
   fecha?: string;
+
+  @IsOptional()
+  @IsString()
+  url?: string;
 }
 
 export class UpdateDocumentosDto {
