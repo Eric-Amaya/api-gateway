@@ -5,6 +5,10 @@ export class UpdateConsentimientoDto {
   @IsDateString()
   fechaFirma?: string;
 
+   @IsOptional()
+  @IsDateString()
+  fechaImplementacion?: string;
+
   @IsString()
   version: string;
 
