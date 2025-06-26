@@ -15,8 +15,9 @@ export class ContactoDto {
   @IsString()
   nombre: string;
 
+  @IsOptional()
   @IsString()
-  telefono: string;
+  telefono?: string;
 
   @IsString()
   parentesco: string;
@@ -44,6 +45,15 @@ export class ConsentimientoDto {
 }
 
 export class CreatePacienteDto {
+
+  @IsOptional()
+  @IsString()
+  telefono?: string;
+
+  @IsOptional()
+  @IsString()
+  protocolo?: string;
+
   @IsString()
   nombre: string;
 
@@ -111,6 +121,10 @@ export class CreatePacienteDto {
   @IsOptional()
   @IsBoolean()
   falloScreening?: boolean;
+
+  @IsOptional()
+  @IsDateString()
+  fechaFalloScreening: string;
 
   @IsOptional()
   @IsString()
