@@ -27,6 +27,10 @@ export class ConsentimientoDto {
   @IsDateString()
   fechaFirma?: string;
 
+  @IsOptional()
+  @IsDateString()
+  fechaImplementacion?: string;
+
   @IsString()
   version: string;
 
@@ -107,6 +111,14 @@ export class CreatePacienteDto {
   @IsOptional()
   @IsBoolean()
   falloScreening?: boolean;
+
+  @IsOptional()
+  @IsString()
+  residencia?: string;
+  
+  @IsOptional()
+  @IsString()
+  alergia?: string; //SI O NO PROXIMANENTE SERIA ALGO MAS DETALLADO DE MOMENTO SOLO SI O NO
 
   @IsOptional()
   @IsArray()
