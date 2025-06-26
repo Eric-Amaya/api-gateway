@@ -63,9 +63,10 @@ export class CreatePacienteDto {
   @IsEnum(EstadoPaciente, { message: 'Estado inválido' })
   estado: EstadoPaciente;
 
+  @IsOptional()
   @IsDateString()
-  fechaIngreso: string;
-
+  fechaIngreso: string; // se usa como fecha de screaning 
+  
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ContactoDto)
