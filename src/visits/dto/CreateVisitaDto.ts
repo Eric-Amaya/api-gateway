@@ -1,17 +1,16 @@
 import {
   IsString,
   IsOptional,
-  IsIn,
   IsBoolean,
-  IsArray,
+  IsDateString,
   ValidateNested,
-  IsDate
+  IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class EntidadDto {
-  @IsIn(['paciente', 'sponsor', 'regulatorio'])
-  tipo: 'paciente' | 'sponsor' | 'regulatorio';
+  @IsString()
+  tipo: string; // 'paciente' | 'sponsor' | 'regulatorio'
 
   @IsString()
   nombre: string;
@@ -29,25 +28,41 @@ class EntidadDto {
   representante?: string;
 }
 
-export class CreateVisitaDto {
-  @IsIn(['paciente', 'sponsor', 'regulatorio'])
-  tipo: string;
+class HistorialDto {
+  @IsString()
+  id: string;
+
+  @IsDateString()
+  fecha: string;
+
+  @IsString()
+  estado: string;
 
   @IsString()
   motivo: string;
 
-  @IsDate()
-  @Type(() => Date)
-  fechaProgramada: Date;
+  @IsOptional()
+  @IsString()
+  detalle?: string;
+}
+
+export class CreateVisitaDto {
+  @IsString()
+  tipo: string;
+
+  @IsDateString()
+  fechaProgramada: string;
 
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  fechaReal?: Date;
+  @IsDateString()
+  fechaReal?: string;
 
   @IsOptional()
-  @IsIn(['programada', 'realizada', 'reagendada', 'cancelada', 'confirmada'])
+  @IsString()
   estado?: string;
+
+  @IsString()
+  motivo: string;
 
   @IsOptional()
   @IsString()
@@ -67,18 +82,9 @@ export class CreateVisitaDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  representantes?: string[];
-
-  @IsOptional()
-  @IsArray()
-  historial?: {
-    id: string;
-    fecha: Date;
-    estado: string;
-    motivo: string;
-    detalle?: string;
-  }[];
+  @ValidateNested({ each: true })
+  @Type(() => HistorialDto)
+  historial?: HistorialDto[];
 
   @IsOptional()
   @IsArray()
@@ -90,9 +96,8 @@ export class CreateVisitaDto {
   creadoPor?: string;
 
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  creadoEn?: Date;
+  @IsDateString()
+  creadoEn?: string;
 
   @IsOptional()
   numeroTomo?: number;
@@ -100,4 +105,8 @@ export class CreateVisitaDto {
   @IsOptional()
   @IsString()
   detalle?: string;
+
+  @IsOptional()
+  @IsString()
+  observaciones?: string;
 }
