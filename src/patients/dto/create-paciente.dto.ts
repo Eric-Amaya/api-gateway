@@ -130,6 +130,10 @@ export class CreatePacienteDto {
   @IsOptional()
   @IsString()
   residencia?: string;
+
+  @IsOptional()
+  @IsNumber()
+  numerodeTomos?: number; // numero de tomos del paciente por ejemplo 1,2,3... , en visitas es el tomo especifico donde se guardo la informacion del paciente
   
   @IsOptional()
   @IsString()
