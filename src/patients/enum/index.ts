@@ -1,7 +1,9 @@
 export enum EstadoPaciente {
-  Activo = 'activo',
-  Inactivo = 'inactivo',
-  FallaScreening = 'falla de screening',
-  Completado = 'completado',
-  Retirado = 'retirado',
+  Invitacion = 'Invitación',
+  Screening = 'Screening',
+  Randomizacion = 'Randomización',
+  Tratamiento = 'Tratamiento',
+  ExtensionTratamiento = 'Extensión de Tratamiento',
+  EOT = 'EOT', // End of Treatment
+  Seguimiento = 'Seguimiento' // o Survival Follow-Up (SFU)
 }

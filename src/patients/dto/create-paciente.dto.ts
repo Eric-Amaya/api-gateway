@@ -15,8 +15,9 @@ export class ContactoDto {
   @IsString()
   nombre: string;
 
+  @IsOptional()
   @IsString()
-  telefono: string;
+  telefono?: string;
 
   @IsString()
   parentesco: string;
@@ -26,6 +27,10 @@ export class ConsentimientoDto {
   @IsOptional()
   @IsDateString()
   fechaFirma?: string;
+
+  @IsOptional()
+  @IsDateString()
+  fechaImplementacion?: string;
 
   @IsString()
   version: string;
@@ -40,6 +45,15 @@ export class ConsentimientoDto {
 }
 
 export class CreatePacienteDto {
+
+  @IsOptional()
+  @IsString()
+  telefono?: string;
+
+  @IsOptional()
+  @IsString()
+  protocolo?: string;
+
   @IsString()
   nombre: string;
 
@@ -49,9 +63,10 @@ export class CreatePacienteDto {
   @IsEnum(EstadoPaciente, { message: 'Estado inválido' })
   estado: EstadoPaciente;
 
+  @IsOptional()
   @IsDateString()
-  fechaIngreso: string;
-
+  fechaIngreso: string; // se usa como fecha de screaning 
+  
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ContactoDto)
@@ -107,6 +122,22 @@ export class CreatePacienteDto {
   @IsOptional()
   @IsBoolean()
   falloScreening?: boolean;
+
+  @IsOptional()
+  @IsDateString()
+  fechaFalloScreening: string;
+
+  @IsOptional()
+  @IsString()
+  residencia?: string;
+
+  @IsOptional()
+  @IsNumber()
+  numerodeTomos?: number; // numero de tomos del paciente por ejemplo 1,2,3... , en visitas es el tomo especifico donde se guardo la informacion del paciente
+  
+  @IsOptional()
+  @IsString()
+  alergia?: string; //SI O NO PROXIMANENTE SERIA ALGO MAS DETALLADO DE MOMENTO SOLO SI O NO
 
   @IsOptional()
   @IsArray()
